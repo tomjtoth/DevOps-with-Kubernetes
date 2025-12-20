@@ -19,10 +19,7 @@ jobs:
       - name: Get tag
         run: |
           TAG=$(grep -Po '#deploy *\K\d+\.\d+' <<< "${{ github.event.head_commit.message }}")
-          if [ -z "$TAG" ]; then
-            echo "missing TAG"
-            exit 1
-          fi
+          [ -z "$TAG" ] && exit 1
           echo "TAG=$TAG" >> $GITHUB_ENV
 
       - name: Checkout
