@@ -17,8 +17,10 @@ jobs:
 
     steps:
       - name: Get tag
+        env:
+          COMMIT_MSG: ${{ github.event.head_commit.message }}
         run: |
-          TAG=$(grep -Po '#deploy *\K\d+\.\d+' <<< "${{ github.event.head_commit.message }}")
+          TAG=$(printf '%s' "$COMMIT_MSG" | grep -Po '#deploy *\K\d+\.\d+')
           [ -z "$TAG" ] && exit 1
           echo "TAG=$TAG" >> $GITHUB_ENV
 
