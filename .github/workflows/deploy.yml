@@ -23,7 +23,7 @@ jobs:
           # https://regex101.com/r/H4BBVD/1
           read -r SVC VER <<<"$(
             printf '%s' "$COMMIT_MSG" \
-            | sed -nE 's/.*#deploy\s+(\S+)\s*:\s*([0-9]+\.[0-9]+).*/\1 \2/p'
+            | sed -nE 's/.*#deploy\s+([[:alnum:]-]+)\s*:\s*([0-9]+\.[0-9]+).*/\1 \2/p'
           )"
           [ -z "$SVC" || -z "$VER" ] && exit 1
           echo "SVC=$SVC" >> $GITHUB_ENV
