@@ -1,9 +1,11 @@
-FROM alpine
-
-RUN apk add util-linux
+FROM rust:alpine AS builder
+RUN apk add --no-cache musl-dev
 
 WORKDIR /app
-
 COPY . .
+RUN cargo build --release
 
-ENTRYPOINT ["/bin/sh", "/app/main.sh"]
+FROM alpine
+WORKDIR /app
+COPY --from=builder /app/target/release/log_output /app/log_output
+ENTRYPOINT ["/app/log_output"]
