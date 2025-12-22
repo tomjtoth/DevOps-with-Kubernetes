@@ -1,3 +1,5 @@
 .*
 Dockerfile
 /target
+/manifests
+README.md
