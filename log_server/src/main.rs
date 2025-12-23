@@ -50,7 +50,12 @@ async fn main() {
                     let _ = pong_file.seek(SeekFrom::Start(0));
                     let _ = pong_file.read_to_string(&mut pong_contents);
 
-                    format!("{}\nPing / Pongs: {}", log_contents, pong_contents)
+                    let log_lines = Vec::from_iter(log_contents.trim().split('\n'));
+
+                    let backup_line = &format!("no lines found in {}", &log_path);
+                    let backup_ref = backup_line.as_ref();
+                    let last_line = log_lines.get(log_lines.len() - 1).unwrap_or(&backup_ref);
+                    format!("{}\nPing / Pongs: {}", last_line, pong_contents)
                 },
             ),
         )

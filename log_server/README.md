@@ -3,7 +3,15 @@
 You probably only need `rustc` or `rustup` for this. Then you can run it with
 
 ```sh
-LOG_PATH=../log_output/logs cargo run
+LOG_PATH=../log_output/data/log \
+PONG_PATH=../pingpong/data/ping \
+cargo run
 ```
 
-..make sure you're running [log_output](../log_output) in the background.
+..make sure you're running both [log_output](../log_output) and [pingpong](../pingpong) first in the background.
+
+...or deploy via
+
+```sh
+kubectl apply -f ../log_output/manifests
+```
