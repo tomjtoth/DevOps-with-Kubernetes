@@ -5,7 +5,8 @@ WORKDIR /app
 # Compiling dummy app, so Docker can cache Dioxus deps.
 # Changing app deps invalidates the cache.
 COPY Cargo.toml Cargo.lock Dioxus.toml .
-RUN mkdir src && \
+RUN mkdir assets && \
+    mkdir src && \
     echo "\
     use dioxus::prelude::*;\
     fn main() {\
@@ -15,7 +16,8 @@ RUN mkdir src && \
 
 # Compiling real app with access to cache
 COPY . .
-RUN dx build --release
+RUN tailwindcss -i ./tailwind.css -o ./assets/tailwind.css --minify && \
+    dx build --release
 
 FROM scratch
 
