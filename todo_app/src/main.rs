@@ -1,5 +1,6 @@
 use dioxus::prelude::*;
 
+#[cfg(feature = "server")]
 mod conf;
 #[cfg(feature = "server")]
 mod server;
@@ -21,7 +22,7 @@ fn main() {
         Ok(dioxus::server::router(App).route(
             "/10min-image",
             dioxus::server::axum::routing::get(|| async {
-                let path_as_str = conf::IMAGE_PATH.to_string();
+                let path_as_str = conf::IMAGE_PATH.lock().await.to_string();
                 tokio::fs::read(path_as_str).await.unwrap_or(vec![])
             }),
         ))
