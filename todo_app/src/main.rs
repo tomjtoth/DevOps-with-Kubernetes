@@ -1,5 +1,6 @@
 use dioxus::prelude::*;
 
+mod conf;
 #[cfg(feature = "server")]
 mod server;
 
@@ -11,9 +12,11 @@ fn main() {
     dioxus::serve(|| async move {
         server::replace_image_if_needed();
 
-        let ip = std::env::var("IP").unwrap_or(String::from("127.0.0.1"));
-        let port = std::env::var("PORT").unwrap_or(String::from("8080"));
-        println!("TODO app listening at {}:{}/", ip, port);
+        println!(
+            "TODO app listening at http://{}:{}/",
+            conf::IP.to_string(),
+            conf::PORT.to_string()
+        );
 
         Ok(dioxus::server::router(App))
     });

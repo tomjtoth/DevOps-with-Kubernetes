@@ -1,11 +1,9 @@
 use std::{env, fs, io::Write, path::Path, time::SystemTime};
 
-use dioxus::prelude::debug;
+use crate::conf::IMAGE_PATH;
 
 pub(super) fn replace_image_if_needed() {
     tokio::spawn(async {
-        let image_path = env::var("IMAGE_PATH").unwrap_or(String::from("public/data/image"));
-
         // 5 seconds for dev purposes
         let mut change_interval = 5;
 
@@ -15,37 +13,40 @@ pub(super) fn replace_image_if_needed() {
             }
         }
 
-        let metadata = fs::metadata(&image_path);
+        let metadata = fs::metadata(IMAGE_PATH.to_string());
         if let Ok(metadata) = metadata {
             if let Ok(mtime) = metadata.modified() {
                 if SystemTime::now().duration_since(mtime).unwrap().as_secs() > change_interval {
-                    let _ = get_image(image_path).await;
+                    let _ = get_image().await;
                 }
             }
         } else {
-            let _ = get_image(image_path).await;
+            let _ = get_image().await;
         }
     });
 }
 
-async fn get_image(image_path: String) -> Result<(), Box<dyn std::error::Error>> {
+async fn get_image() -> Result<(), Box<dyn std::error::Error>> {
     let response = reqwest::get("https://picsum.photos/1200")
         .await?
         .error_for_status()?;
 
     let img = response.bytes().await?;
 
-    let path = Path::new(&image_path);
+    let path_as_str = IMAGE_PATH.to_string();
+    let path = Path::new(&path_as_str);
     if let Some(parent) = path.parent() {
-        debug!("creating dir: {}", parent.to_str().unwrap());
-        fs::create_dir_all(parent)?;
+        if !fs::exists(&parent).unwrap() {
+            fs::create_dir_all(parent)?;
+            println!("created dir: {}", parent.to_str().unwrap());
+        }
     }
 
-    let mut file = std::fs::File::create(image_path)?;
+    let mut file = std::fs::File::create(path_as_str)?;
 
     file.write_all(&img)?;
 
-    debug!("replaced image");
+    println!("replaced image");
 
     Ok(())
 }
