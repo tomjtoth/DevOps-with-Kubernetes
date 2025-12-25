@@ -10,7 +10,7 @@ fn main() {
     dioxus::launch(App);
 
     #[cfg(feature = "server")]
-    dioxus::serve(|| async move {
+    dioxus::serve(|| async {
         server::replace_image_if_needed();
 
         println!(
@@ -22,7 +22,7 @@ fn main() {
         Ok(dioxus::server::router(App).route(
             "/10min-image",
             dioxus::server::axum::routing::get(|| async {
-                let path_as_str = conf::IMAGE_PATH.lock().await.to_string();
+                let path_as_str = { conf::IMAGE_PATH.lock().await.to_string() };
                 tokio::fs::read(path_as_str).await.unwrap_or(vec![])
             }),
         ))

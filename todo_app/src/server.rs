@@ -11,9 +11,9 @@ pub(super) fn replace_image_if_needed() {
         let metadata = fs::metadata(&image_path);
         if let Ok(metadata) = metadata {
             if let Ok(mtime) = metadata.modified() {
-                if SystemTime::now().duration_since(mtime).unwrap().as_secs()
-                    > *CHANGE_INTERVAL.lock().await
-                {
+                let diff = { *CHANGE_INTERVAL.lock().await };
+
+                if SystemTime::now().duration_since(mtime).unwrap().as_secs() > diff {
                     let _ = get_image(&image_path).await;
                 }
             }
@@ -32,7 +32,7 @@ async fn get_image(path_as_str: &String) -> Result<(), Box<dyn std::error::Error
 
     let path = Path::new(&path_as_str);
     if let Some(parent) = path.parent() {
-        if !fs::exists(&parent).unwrap() {
+        if !fs::exists(&parent)? {
             fs::create_dir_all(parent)?;
             println!("created dir: {}", parent.to_str().unwrap());
         }
