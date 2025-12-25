@@ -1,64 +1,42 @@
-use {
-    dioxus::{fullstack::Lazy, prelude::info},
-    reqwest::header::LOCATION,
-    std::time::SystemTime,
-    tokio::sync::Mutex,
-};
+use std::{env, fs, io::Write, path::Path, time::SystemTime};
 
-struct ServerState {
-    src: Option<String>,
-    timestamp: SystemTime,
-}
+use dioxus::prelude::debug;
 
-static SERVER_STATE: Lazy<Mutex<ServerState>> = Lazy::new(|| async {
-    dioxus::Ok(Mutex::new(ServerState {
-        src: get_src().await,
-        timestamp: SystemTime::now(),
-    }))
-});
+pub(super) async fn replace_image_if_needed() -> std::io::Result<()> {
+    let image_path = env::var("IMAGE_PATH").unwrap_or(String::from("public/data/image"));
 
-pub(super) fn init_server_state() {
-    let _ = *SERVER_STATE;
-}
-
-async fn get_src() -> Option<String> {
-    let res = reqwest::Client::builder()
-        .redirect(reqwest::redirect::Policy::none())
-        .build()
-        .unwrap()
-        .get("https://picsum.photos/1200")
-        .send()
-        .await;
-
-    if let Ok(res) = res {
-        if res.status().is_redirection() {
-            if let Some(header_value) = res.headers().get(LOCATION) {
-                if let Ok(url) = header_value.to_str() {
-                    return Some(url.to_string());
-                }
+    let metadata = fs::metadata(&image_path);
+    if let Ok(metadata) = metadata {
+        if let Ok(mtime) = metadata.modified() {
+            if SystemTime::now().duration_since(mtime).unwrap().as_secs() > 5 {
+                let _ = get_image(image_path).await;
             }
         }
+    } else {
+        let _ = get_image(image_path).await;
     }
-    None
+
+    Ok(())
 }
 
-pub(super) async fn refresh_state_if_needed() -> Option<String> {
-    let now = SystemTime::now();
-    let needs_update = {
-        let st = SERVER_STATE.lock().await;
-        now.duration_since(st.timestamp).unwrap().as_secs() > 5
-    };
+async fn get_image(image_path: String) -> Result<(), Box<dyn std::error::Error>> {
+    let response = reqwest::get("https://picsum.photos/1200")
+        .await?
+        .error_for_status()?;
 
-    if needs_update {
-        tokio::spawn(async move {
-            let url = get_src().await;
+    let img = response.bytes().await?;
 
-            let mut st = SERVER_STATE.lock().await;
-            st.src = url;
-            st.timestamp = SystemTime::now();
-            info!("changed image src");
-        });
+    let path = Path::new(&image_path);
+    if let Some(parent) = path.parent() {
+        debug!("creating dir: {}", parent.to_str().unwrap());
+        fs::create_dir_all(parent)?;
     }
 
-    SERVER_STATE.lock().await.src.clone()
+    let mut file = std::fs::File::create(image_path)?;
+
+    file.write_all(&img)?;
+
+    debug!("replaced image");
+
+    Ok(())
 }
