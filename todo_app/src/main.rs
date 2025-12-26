@@ -22,8 +22,7 @@ fn main() {
         Ok(dioxus::server::router(App).route(
             "/10min-image",
             dioxus::server::axum::routing::get(|| async {
-                let path_as_str = { conf::IMAGE_PATH.lock().await.to_string() };
-                tokio::fs::read(path_as_str).await.unwrap_or(vec![])
+                tokio::fs::read(&*conf::IMAGE_PATH).await.unwrap_or(vec![])
             }),
         ))
     });
