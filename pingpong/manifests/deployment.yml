@@ -12,13 +12,6 @@ spec:
       labels:
         app: pingpong
     spec:
-      volumes:
-        - name: shared-data
-          persistentVolumeClaim:
-            claimName: pvc-100m
       containers:
         - name: pingpong
-          image: tomjtoth/devops-with-kubernetes:pingpong-1.11
-          volumeMounts:
-            - name: shared-data
-              mountPath: /app/data
+          image: tomjtoth/devops-with-kubernetes:pingpong-2.1
