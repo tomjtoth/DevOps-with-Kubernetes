@@ -2,19 +2,31 @@
 @source "./src/**/*.{rs,html,css}";
 
 h1 {
-  @apply text-3xl;
+  @apply text-3xl py-4;
 }
 
 h2 {
-  @apply text-2xl;
+  @apply text-2xl py-4;
 }
 
 h3 {
-  @apply text-xl;
+  @apply text-xl py-4;
+}
+
+img {
+  @apply p-2;
+}
+
+ul {
+  @apply p-4 pr-0;
+}
+
+li {
+  @apply list-disc;
 }
 
 body {
-  @apply bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-100;
+  @apply p-2 bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-100;
 }
 
 button {
