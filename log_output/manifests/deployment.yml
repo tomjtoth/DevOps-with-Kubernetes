@@ -26,7 +26,7 @@ spec:
             - name: shared-data
               mountPath: /app/data
         - name: log-server
-          image: tomjtoth/devops-with-kubernetes:log-server-1.11
+          image: tomjtoth/devops-with-kubernetes:log-server-2.1
           volumeMounts:
             - name: shared-data
               mountPath: /app/data

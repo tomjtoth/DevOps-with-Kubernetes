@@ -6,17 +6,38 @@ use std::{
 };
 
 use axum::{Router, extract::State, routing::get};
+use reqwest::Error;
 
 #[derive(Clone)]
 struct AppState {
     log_file: Arc<File>,
-    pong_file: Arc<File>,
+}
+
+async fn fetch_pings() -> Result<String, Error> {
+    let resp = reqwest::get("http://pingpong-svc:55555/pings")
+        .await?
+        .error_for_status()?;
+    let text = resp.text().await?;
+    Ok(text)
+}
+
+async fn root_handler(State(AppState { mut log_file }): State<AppState>) -> String {
+    let mut log_contents = String::new();
+    let _ = log_file.seek(SeekFrom::Start(0));
+    let _ = log_file.read_to_string(&mut log_contents);
+
+    let pings = fetch_pings().await.unwrap_or("none, yet...".to_string());
+
+    let log_lines = Vec::from_iter(log_contents.trim().split('\n'));
+
+    let last_line = log_lines.last().unwrap_or(&"log is empty");
+
+    format!("{}\nPing / Pongs: {}", last_line, pings)
 }
 
 #[tokio::main]
 async fn main() {
     let log_path = env::var("LOG_PATH").unwrap_or(String::from("data/log"));
-    let pong_path = env::var("PONG_PATH").unwrap_or(String::from("data/pong"));
 
     let app_state = AppState {
         log_file: Arc::new(
@@ -25,40 +46,10 @@ async fn main() {
                 .open(&log_path)
                 .expect(&format!(r#"unable to open LOG_PATH="{log_path}""#)),
         ),
-
-        pong_file: Arc::new(
-            File::options()
-                .read(true)
-                .open(&pong_path)
-                .expect(&format!(r#"unable to open PONG_PATH="{pong_path}""#)),
-        ),
     };
 
     let app = Router::new()
-        .route(
-            "/",
-            get(
-                |State(AppState {
-                     mut log_file,
-                     mut pong_file,
-                 }): State<AppState>| async move {
-                    let mut log_contents = String::new();
-                    let _ = log_file.seek(SeekFrom::Start(0));
-                    let _ = log_file.read_to_string(&mut log_contents);
-
-                    let mut pong_contents = String::new();
-                    let _ = pong_file.seek(SeekFrom::Start(0));
-                    let _ = pong_file.read_to_string(&mut pong_contents);
-
-                    let log_lines = Vec::from_iter(log_contents.trim().split('\n'));
-
-                    let backup_line = &format!("no lines found in {}", &log_path);
-                    let backup_ref = backup_line.as_ref();
-                    let last_line = log_lines.get(log_lines.len() - 1).unwrap_or(&backup_ref);
-                    format!("{}\nPing / Pongs: {}", last_line, pong_contents)
-                },
-            ),
-        )
+        .route("/", get(root_handler))
         .with_state(app_state);
 
     let port = env::var("PORT").unwrap_or(String::from("3000"));
