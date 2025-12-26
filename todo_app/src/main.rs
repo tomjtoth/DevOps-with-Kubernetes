@@ -31,6 +31,7 @@ fn main() {
 
 #[post("/check-on-image")]
 async fn check_on_image() -> Result<()> {
+    println!("check_on_image()");
     server::replace_image_if_needed();
 
     Ok(())
