@@ -26,5 +26,6 @@ Docker images ([`tomjtoth/devops-with-kubernetes:service-x.y`](https://hub.docke
 
 ### Chapter 3
 
-- [2.1](https://github.com/tomjtoth/DevOps-with-Kubernetes/tree/2.1/pingpong)
-  - or the [log_server](https://github.com/tomjtoth/DevOps-with-Kubernetes/tree/2.1/log_server)
+- 2.1
+  - [pingpong](https://github.com/tomjtoth/DevOps-with-Kubernetes/tree/2.1/pingpong)
+  - [log_server](https://github.com/tomjtoth/DevOps-with-Kubernetes/tree/2.1/log_server)
