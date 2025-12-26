@@ -2,7 +2,7 @@ FROM tomjtoth/dioxus-docker:0.7.2-alpine AS builder
 WORKDIR /app
 
 # Compiling dummy app, so Docker can cache Dioxus deps.
-# Changing app deps invalidates the cache.
+# Changing any of the below 3 files invalidates cache.
 COPY Cargo.toml Cargo.lock Dioxus.toml .
 RUN apk add --no-cache ca-certificates && \
     mkdir assets && \
@@ -12,7 +12,8 @@ RUN apk add --no-cache ca-certificates && \
     fn main() {\
         dioxus::launch(|| rsx! {});\
     }" >> src/main.rs && \
-    dx build --release
+    dx build --release && \
+    rm -rf /app/target/dx/todo_app/release/*
 
 # Compiling real app with access to cache
 COPY . .
