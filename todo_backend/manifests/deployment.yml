@@ -16,3 +16,6 @@ spec:
         - name: todo-backend
           image: tomjtoth/devops-with-kubernetes:todo-backend-2.2
           imagePullPolicy: Always
+          env:
+            - name: IP
+              value: 0.0.0.0
