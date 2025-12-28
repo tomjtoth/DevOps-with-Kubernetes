@@ -6,6 +6,17 @@ Tämä on palautusrepo HY:n kurssille.
 
 Docker images ([`tomjtoth/devops-with-kubernetes:service-x.y`](https://hub.docker.com/r/tomjtoth/devops-with-kubernetes/tags)) are generated via [GHA](.github/workflows/deploy.yml#L19-L30), tags are parsed from the HEAD commit message ("... `#deploy service:x.y` ...") via regex.
 
+## K3s tweaks
+
+Recreating the cluster
+
+```sh
+k3d cluster delete
+k3d cluster create --port 8082:30080@agent:0 -p 8081:80@loadbalancer --agents 2
+docker exec k3d-k3s-default-agent-0 mkdir -p /tmp/kube
+for app in */manifests; do kubectl apply -f $app; done
+```
+
 ### Chapter 2
 
 - [1.1](https://github.com/tomjtoth/DevOps-with-Kubernetes/tree/1.1/log_output)
