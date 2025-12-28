@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: debugger-dep
+  labels:
+    app: debugger
+spec:
+  containers:
+    - name: debugger
+      image: alpine
+      imagePullPolicy: IfNotPresent
+      command:
+        - sleep
+        - "3600"
