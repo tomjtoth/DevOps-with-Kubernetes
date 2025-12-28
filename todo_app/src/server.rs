@@ -2,15 +2,15 @@ use std::{fs, io::Write, path::Path, time::SystemTime};
 
 use dioxus::fullstack::reqwest;
 
-use crate::conf::{CHANGE_INTERVAL, IMAGE_PATH};
+use crate::{
+    conf::{CHANGE_INTERVAL, IMAGE_PATH},
+    log2,
+};
 
 pub(super) fn replace_image_if_needed() {
     tokio::spawn(async {
-        println!("within tokio::spawned block");
-
         let metadata = fs::metadata(&*IMAGE_PATH);
         if let Ok(metadata) = metadata {
-            println!("within tokio::metadata OK");
             if let Ok(mtime) = metadata.modified() {
                 let diff = { *CHANGE_INTERVAL };
 
@@ -19,35 +19,38 @@ pub(super) fn replace_image_if_needed() {
                 }
             }
         } else {
-            println!("within tokio::metadata errored");
             let _ = get_image().await;
         }
     });
 }
 
 async fn get_image() -> Result<(), Box<dyn std::error::Error>> {
-    println!("get_image: reqwest::get");
     let response = reqwest::get("https://picsum.photos/1200")
-        .await?
+        .await
+        .inspect_err(log2("posting todo to backend"))?
         .error_for_status()?;
 
-    println!("get_image: response.bytes()");
-    let img = response.bytes().await?;
+    let img = response
+        .bytes()
+        .await
+        .inspect_err(log2("response.bytes failed"))?;
 
     let path = Path::new(&*IMAGE_PATH);
     if let Some(parent) = path.parent() {
-        println!("get_image: fs::exists(&parent)?");
-        if !fs::exists(&parent)? {
+        if !fs::exists(&parent).inspect_err(log2(format!(
+            "checking existence of {} failed",
+            &parent.to_str().unwrap()
+        )))? {
             fs::create_dir_all(parent)?;
             println!("created dir: {}", parent.to_str().unwrap());
         }
     }
 
-    println!("get_image: fs::File::create(path_as_str)?");
-    let mut file = fs::File::create(&*IMAGE_PATH)?;
+    let mut file = fs::File::create(&*IMAGE_PATH)
+        .inspect_err(log2(format!("creating {} failed", &*IMAGE_PATH)))?;
 
-    println!("get_image: before file.write_all(&img)?;");
-    file.write_all(&img)?;
+    file.write_all(&img)
+        .inspect_err(log2(format!("failed to write to {}", &*IMAGE_PATH)))?;
 
     println!("replaced image");
 

@@ -38,15 +38,18 @@ async fn check_on_image() -> Result<()> {
     Ok(())
 }
 
+fn log2<T: std::error::Error>(ops: impl std::fmt::Display) -> impl Fn(&T) {
+    move |e| eprintln!("{ops}:\n\t{e}")
+}
+
 #[get("/todos")]
 async fn get_todos() -> Result<Vec<String>> {
-    println!("getting todos from {}", &*conf::BACKEND_URL);
-
-    let res = reqwest::get(&*conf::BACKEND_URL).await?;
-    println!("reponse is OK");
-
-    let arr = res.json::<Vec<String>>().await?;
-    println!("json is OK");
+    let arr = reqwest::get(&*conf::BACKEND_URL)
+        .await
+        .inspect_err(log2("request to backend failed"))?
+        .json::<Vec<String>>()
+        .await
+        .inspect_err(log2("parsing json failed"))?;
 
     Ok(arr)
 }
@@ -57,7 +60,8 @@ async fn post_todo(todo: String) -> Result<String> {
         .post(&*conf::BACKEND_URL)
         .json(&todo)
         .send()
-        .await?;
+        .await
+        .inspect_err(log2("posting todo to backend"))?;
 
     Ok(todo)
 }
