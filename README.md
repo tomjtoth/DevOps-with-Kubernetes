@@ -43,3 +43,4 @@ for app in ns/manifests pv/manifests */manifests; do kubectl apply -f $app; done
 - 2.2
   - [todo-app](https://github.com/tomjtoth/DevOps-with-Kubernetes/tree/2.2/todo_app)
   - [todo-backend](https://github.com/tomjtoth/DevOps-with-Kubernetes/tree/2.2/todo_backend)
+- [2.3](https://github.com/tomjtoth/DevOps-with-Kubernetes/tree/2.3/log_output)
