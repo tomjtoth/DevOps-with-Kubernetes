@@ -1,16 +1,17 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: pv-100m
+  namespace: project
+  name: pv-100m-project
 spec:
-  storageClassName: pv-100m
+  storageClassName: pv-100m-project
   capacity:
     storage: 100Mi
   volumeMode: Filesystem
   accessModes:
     - ReadWriteOnce
   local:
-    path: /tmp/kube
+    path: /tmp/kube-project
   nodeAffinity:
     required:
       nodeSelectorTerms:
