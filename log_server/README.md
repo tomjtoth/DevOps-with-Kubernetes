@@ -4,7 +4,6 @@ You probably only need `rustc` or `rustup` for this. Then you can run it with
 
 ```sh
 LOG_PATH=../log_output/data/log \
-PONG_PATH=../pingpong/data/ping \
 cargo run
 ```
 

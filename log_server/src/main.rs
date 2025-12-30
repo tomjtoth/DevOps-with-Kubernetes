@@ -11,6 +11,8 @@ use reqwest::Error;
 #[derive(Clone)]
 struct AppState {
     log_file: Arc<File>,
+    file_content: String,
+    message: String,
 }
 
 async fn fetch_pings() -> Result<String, Error> {
@@ -21,7 +23,13 @@ async fn fetch_pings() -> Result<String, Error> {
     Ok(text)
 }
 
-async fn root_handler(State(AppState { mut log_file }): State<AppState>) -> String {
+async fn root_handler(
+    State(AppState {
+        mut log_file,
+        file_content,
+        message,
+    }): State<AppState>,
+) -> String {
     let mut log_contents = String::new();
     let _ = log_file.seek(SeekFrom::Start(0));
     let _ = log_file.read_to_string(&mut log_contents);
@@ -32,12 +40,24 @@ async fn root_handler(State(AppState { mut log_file }): State<AppState>) -> Stri
 
     let last_line = log_lines.last().unwrap_or(&"log is empty");
 
-    format!("{}\nPing / Pongs: {}", last_line, pings)
+    format!(
+        "file content: {}\nenv variable: {}\n{}\nPing / Pongs: {}",
+        file_content, message, last_line, pings
+    )
 }
 
 #[tokio::main]
 async fn main() {
     let log_path = env::var("LOG_PATH").unwrap_or(String::from("data/log"));
+
+    let mut file_content = String::new();
+
+    File::options()
+        .read(true)
+        .open("information.txt")
+        .expect("unable to open information.txt")
+        .read_to_string(&mut file_content)
+        .expect("could not read contents of information.txt");
 
     let app_state = AppState {
         log_file: Arc::new(
@@ -46,6 +66,10 @@ async fn main() {
                 .open(&log_path)
                 .expect(&format!(r#"unable to open LOG_PATH="{log_path}""#)),
         ),
+
+        file_content,
+
+        message: env::var("MESSAGE").expect("cannot see env var MESSAGE"),
     };
 
     let app = Router::new()

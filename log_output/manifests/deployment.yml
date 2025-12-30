@@ -17,6 +17,10 @@ spec:
         - name: shared-data
           persistentVolumeClaim:
             claimName: pvc-100m
+        - name: config
+          configMap:
+            name: log-output-conf
+
       containers:
         - name: log-output
           image: tomjtoth/devops-with-kubernetes:log-output-1.10
@@ -27,7 +31,17 @@ spec:
             - name: shared-data
               mountPath: /app/data
         - name: log-server
-          image: tomjtoth/devops-with-kubernetes:log-server-2.1
+          image: tomjtoth/devops-with-kubernetes:log-server-2.5
+          env:
+            - name: MESSAGE
+              valueFrom:
+                configMapKeyRef:
+                  name: log-output-conf
+                  key: message
           volumeMounts:
             - name: shared-data
               mountPath: /app/data
+
+            - name: config
+              mountPath: /app/information.txt
+              subPath: information.txt

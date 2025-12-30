@@ -1,15 +1,20 @@
 FROM rust:alpine AS builder
-RUN apk add --no-cache musl-dev
-
 WORKDIR /app
+
 COPY . .
-RUN cargo build --release
+RUN --mount=type=cache,target=/usr/local/cargo/registry \
+    --mount=type=cache,target=/usr/local/cargo/git \
+    --mount=type=cache,target=/app/target \
+    apk add --no-cache musl-dev && \
+    cargo build --release && \
+    mv /app/target/release/log_server /app.built
+
 
 FROM scratch
 WORKDIR /app
 
-COPY --from=builder /app/target/release/log_server /app/log_server
+COPY --from=builder /app.built /app/bin
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 
 ENV SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt 
-ENTRYPOINT ["/app/log_server"]
+ENTRYPOINT ["/app/bin"]
