@@ -25,8 +25,8 @@ async fn main() {
         .route("/todos", post(add_todo))
         .with_state(state);
 
-    let ip = env::var("IP").unwrap_or(String::from("127.0.0.1"));
-    let port = env::var("PORT").unwrap_or(String::from("3000"));
+    let ip = env::var("IP").expect("missing env var IP");
+    let port = env::var("PORT").expect("missing env var PORT");
 
     let addr = format!("{}:{}", &ip, &port);
     let listener = tokio::net::TcpListener::bind(&addr).await.unwrap();
