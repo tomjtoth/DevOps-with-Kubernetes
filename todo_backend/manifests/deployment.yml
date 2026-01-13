@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: todo-backend
-          image: tomjtoth/devops-with-kubernetes:todo-backend-2.8
+          image: tomjtoth/devops-with-kubernetes:todo-backend-2.10
           imagePullPolicy: Always
           env:
             - name: IP

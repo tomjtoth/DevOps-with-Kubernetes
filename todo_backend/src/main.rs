@@ -61,6 +61,15 @@ async fn add_todo(
     State(state): State<Arc<AppState>>,
     Json(todo): Json<String>,
 ) -> impl IntoResponse {
+    let len = todo.len();
+
+    println!("Adding todo:\n\t{}", todo);
+
+    if len > 140 {
+        eprintln!("todo longer, than 140 ({}), aborting!", len);
+        return StatusCode::BAD_REQUEST;
+    }
+
     query("INSERT INTO todos (todo) VALUES ($1)")
         .bind(todo)
         .execute(&state.0)
