@@ -8,14 +8,7 @@ Docker images ([`tomjtoth/devops-with-kubernetes:service-x.y`](https://hub.docke
 
 ## K3s tweaks
 
-Recreating the cluster for every single submission to start afresh via these commands:
-
-```sh
-k3d cluster delete
-k3d cluster create --port 8082:30080@agent:0 -p 8081:80@loadbalancer --agents 2
-docker exec k3d-k3s-default-agent-0 mkdir -p /tmp/kube-{exercises,project}
-for manifests in {ns,pv,*}/manifests; do kubectl apply -f $manifests; done
-```
+I found the propagation of changes to be imperfect/slow on my setup, hence I decided to recreate the cluster for every single submission via [this script](./reset-k3s.sh).
 
 ### Chapter 2
 
