@@ -4,7 +4,7 @@ metadata:
   namespace: exercises
   name: pvc-100m
 spec:
-  storageClassName: pv-100m-exercises
+  storageClassName: local-path
   accessModes:
     - ReadWriteOnce
   resources:

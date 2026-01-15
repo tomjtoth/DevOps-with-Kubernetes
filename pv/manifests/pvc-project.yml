@@ -4,7 +4,7 @@ metadata:
   namespace: project
   name: pvc-100m
 spec:
-  storageClassName: pv-100m-project
+  storageClassName: local-path
   accessModes:
     - ReadWriteOnce
   resources:
