@@ -32,6 +32,9 @@ fi
 root_dir="$(dirname "${BASH_SOURCE[0]}")"
 cd "$root_dir"
 
-for manifests in {ns,pv,*}/manifests; do 
-    kubectl apply -f $manifests
+for manifests in {ns,pv,*}/manifests; do
+    if [[ "$manifests" =~ \.gke\.yml$ ]]; then
+        continue
+    fi
+    kubectl --context k3d-k3s-default apply -f $manifests
 done
