@@ -44,3 +44,7 @@ I found the propagation of changes to be imperfect/slow on my setup, hence I dec
 - [2.8](https://github.com/tomjtoth/DevOps-with-Kubernetes/tree/2.8/todo_backend)
 - [2.9](https://github.com/tomjtoth/DevOps-with-Kubernetes/tree/2.9/todo_reminder)
 - [2.10](https://github.com/tomjtoth/DevOps-with-Kubernetes/tree/2.10/todo_backend)
+
+### Chapter 4
+
+- [3.1](https://github.com/tomjtoth/DevOps-with-Kubernetes/tree/3.1/pingpong)
