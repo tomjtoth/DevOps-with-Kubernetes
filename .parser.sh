@@ -107,12 +107,8 @@ __parse(){
             "$(echo "$usage" | sed 's/^    //gm')"
         exit 1
     fi
-
-    START_TIME=$(date +%s)
-}
-
-stop_timer(){
-    echo "ops took $(($(date +%s) - $START_TIME)) seconds to finish"
 }
 
 __parse $(basename ${BASH_SOURCE[1]}) "$@"
+
+source .timer.sh
