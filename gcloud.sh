@@ -1,86 +1,75 @@
 #!/bin/bash
 
-USAGE="proper usage is: $(basename $0) [OPTIONS]
+script_dir="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
+source "$script_dir"/.parser.sh
 
-where OPTIONS are:
---delete        teardown the cluster
---create        redefine the cluster
---reset         teardown + redefine the cluster
---resize N      scale number of nodes in the pool
-"
-
-TAB=$(printf '\t')
-
-while [ $# -gt 0 ]; do
-    case "$1" in 
-        (--delete) DELETING=1;;
-
-        (--create) CREATING=1;;
-
-        (--reset) DELETING=1 CREATING=1;;
-
-        (--resize)
-            if [[ ! "$2" =~ ^[0-9]+$ ]]; then
-                UNKNOWN_FLAGS+=("$TAB$1 NNN <- needs to be a numeric arg, found \"$2\"")
-            else
-                RESIZE=$2
-            fi
-            shift
-            ;;
-
-        (*) UNKNOWN_FLAGS+=("$TAB$1");;
-    esac
-    shift
-done
-
-if [ -v UNKNOWN_FLAGS ]; then 
-    printf '%s\n' \
-        "found the following unknown flags:" \
-        "${UNKNOWN_FLAGS[@]}" \
-        "" \
-        "$USAGE"
-    exit 1
-fi
-
-op() {
-    local START_TIME=$(date +%s)
+gke_op() {
     local op=$1
     shift
 
     gcloud container clusters $op dwk-cluster \
         --zone=europe-north1-b \
         "$@"
-
-    echo "operation $op took $(($(date +%s) - $START_TIME)) seconds to finish"
 }
 
-if [ -v DELETING ]; then
-    op delete
+if [ -v DELETE ]; then
+    gke_op delete
 fi
 
 if [ -v RESIZE ]; then
-    op resize \
+    gke_op resize \
         --node-pool=default-pool \
         --num-nodes=$RESIZE
 fi
 
-if [ -v CREATING ]; then
-    op create \
+if [ -v CREATE ]; then
+    gke_op create \
         --cluster-version=1.32 \
         --disk-size=32 \
         --num-nodes=3 \
         --machine-type=e2-micro
 fi
 
-root_dir="$(dirname "${BASH_SOURCE[0]}")"
-cd "$root_dir"
 
-for manifests in {ns,pv,*}/manifests/*.yml; do
-    man_gke="${manifests%.yml}.gke.yml"
+gke(){
+    echo kubectl $1 -f "$2"
+}
 
-    if [ -f "$man_gke" ]; then
-        manifests="$man_gke"
+if [ -v DELETE_ALL ]; then
+    DELETE_THESE=("$script_dir"/{!(ns|pv),pv,ns}/manifests/{{ing,{svc,service}}*,!(ing*|svc*|service*)}.yml)
+fi
+
+if [ -v APPLY_ALL ]; then
+    APPLY_THESE=("$script_dir"/{ns,pv,!(ns|pv)}/manifests/*.yml)
+fi
+
+has_gke_version(){
+    local gke_manifest="${1%.yml}.gke.yml"
+    shift
+
+    if [ -f "$gke_manifest" ] && [[ " $@ " == *" $gke_manifest "* ]]; then
+        return 0
     fi
 
-    echo kubectl apply -f "$manifests"
-done
+    return 1
+}
+
+if [ -v DELETE_THESE ]; then
+    for manifest in "${DELETE_THESE[@]}"; do
+        has_gke_version "$manifest" "${DELETE_THESE[@]}" && \
+            continue
+        
+        gke delete "$manifest"
+    done
+fi
+
+if [ -v APPLY_THESE ]; then
+    for manifest in "${APPLY_THESE[@]}"; do
+        has_gke_version "$manifest" "${APPLY_THESE[@]}" && \
+            continue
+        
+        gke apply "$manifest"
+    done
+fi
+
+stop_timer
