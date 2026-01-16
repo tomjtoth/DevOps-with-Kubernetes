@@ -1,7 +1,7 @@
 #/bin/bash
 
-script_dir="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
-source "$script_dir"/.parser.sh
+cd "$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
+source .parser.sh
 
 if [ -v DELETE ]; then
     k3d cluster delete
@@ -16,11 +16,11 @@ k3s(){
 }
 
 if [ -v DELETE_ALL ]; then
-    DELETE_THESE=("$script_dir"/{!(ns|pv),pv,ns}/manifests/{{ing,{svc,service}}*,!(ing*|svc*|service*)}.yml)
+    DELETE_THESE=({!(ns|pv),pv,ns}/manifests/{{ing,{svc,service}}*,!(ing*|svc*|service*)}.yml)
 fi
 
 if [ -v APPLY_ALL ]; then
-    APPLY_THESE=("$script_dir"/{ns,pv,!(ns|pv)}/manifests/!(*.gke).yml)
+    APPLY_THESE=({ns,pv,!(ns|pv)}/manifests/!(*.gke).yml)
 fi
 
 if [ -v DELETE_THESE ]; then
