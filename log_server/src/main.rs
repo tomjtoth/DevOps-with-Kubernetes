@@ -2,11 +2,14 @@ use std::{
     env,
     fs::File,
     io::{SeekFrom, prelude::*},
-    sync::Arc,
+    sync::{Arc, LazyLock},
 };
 
 use axum::{Router, extract::State, routing::get};
 use reqwest::Error;
+
+static BACKEND_URL: LazyLock<String> =
+    LazyLock::new(|| env::var("BACKEND_URL").expect("missing env var BACKEND_URL"));
 
 #[derive(Clone)]
 struct AppState {
@@ -16,9 +19,7 @@ struct AppState {
 }
 
 async fn fetch_pings() -> Result<String, Error> {
-    let resp = reqwest::get("http://pingpong-svc:55555/pings")
-        .await?
-        .error_for_status()?;
+    let resp = reqwest::get(&*BACKEND_URL).await?.error_for_status()?;
     let text = resp.text().await?;
     Ok(text)
 }
@@ -48,7 +49,7 @@ async fn root_handler(
 
 #[tokio::main]
 async fn main() {
-    let log_path = env::var("LOG_PATH").unwrap_or(String::from("data/log"));
+    let log_path = env::var("LOG_PATH").expect("missing env var LOG_PATH");
 
     let mut file_content = String::new();
 
@@ -76,9 +77,10 @@ async fn main() {
         .route("/", get(root_handler))
         .with_state(app_state);
 
-    let port = env::var("PORT").unwrap_or(String::from("3000"));
+    let ip = env::var("IP").expect("missing env var IP");
+    let port = env::var("PORT").expect("missing env var PORT");
 
-    let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{}", &port))
+    let listener = tokio::net::TcpListener::bind(format!("{}:{}", &ip, &port))
         .await
         .unwrap();
 

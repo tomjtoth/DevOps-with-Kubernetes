@@ -4,7 +4,7 @@ use std::{
     sync::{Arc, LazyLock},
 };
 
-use axum::{Router, extract::State, response::IntoResponse, routing::get};
+use axum::{Router, extract::State, http::StatusCode, response::IntoResponse, routing::get};
 
 static DATABASE_URL: LazyLock<String> =
     LazyLock::new(|| env::var("DATABASE_URL").expect("missing env var DATABASE_URL"));
@@ -24,6 +24,7 @@ async fn main() {
     let state = Arc::new(AppState { pool });
 
     let app = Router::new()
+        .route("/", get(|| async { StatusCode::OK }))
         .route("/pingpong", get(handle_browser))
         .route("/pings", get(handle_ping))
         .with_state(state);

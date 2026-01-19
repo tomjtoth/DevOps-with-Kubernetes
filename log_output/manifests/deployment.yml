@@ -23,7 +23,7 @@ spec:
 
       containers:
         - name: log-output
-          image: tomjtoth/devops-with-kubernetes:log-output-1.10
+          image: tomjtoth/devops-with-kubernetes:log-output-3.2
           env:
             - name: LOG_PATH
               value: data/log
@@ -31,13 +31,22 @@ spec:
             - name: shared-data
               mountPath: /app/data
         - name: log-server
-          image: tomjtoth/devops-with-kubernetes:log-server-2.5
+          image: tomjtoth/devops-with-kubernetes:log-server-3.2
           env:
+            - name: IP
+              value: 0.0.0.0
+            - name: PORT
+              value: "3000"
+
             - name: MESSAGE
               valueFrom:
                 configMapKeyRef:
                   name: log-output-conf
                   key: message
+            - name: BACKEND_URL
+              value: http://pingpong-svc:55555/pings
+            - name: LOG_PATH
+              value: data/log
           volumeMounts:
             - name: shared-data
               mountPath: /app/data

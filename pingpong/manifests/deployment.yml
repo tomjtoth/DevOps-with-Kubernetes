@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: pingpong
-          image: tomjtoth/devops-with-kubernetes:pingpong-2.7
+          image: tomjtoth/devops-with-kubernetes:pingpong-3.2
           env:
             - name: IP
               value: 0.0.0.0

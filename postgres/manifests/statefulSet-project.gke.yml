@@ -1,0 +1,69 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: project
+  name: postgres-conf
+data:
+  init.sql: |
+    CREATE TABLE IF NOT EXISTS todos (
+      id SERIAL,
+      todo TEXT
+    );
+
+    INSERT INTO todos (todo) VALUES 
+      ('Learn Rust'),
+      ('Learn Dioxus'),
+      ('Build something');
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  namespace: project
+  name: postgres-stset
+spec:
+  serviceName: postgres-svc
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres-app
+  template:
+    metadata:
+      labels:
+        app: postgres-app
+    spec:
+      volumes:
+        - name: config
+          configMap:
+            name: postgres-conf
+      containers:
+        - name: postgres
+          image: postgres:alpine
+          ports:
+            - name: pg
+              containerPort: 5432
+          env:
+            - name: POSTGRES_PASSWORD
+              value: password
+            - name: POSTGRES_USER
+              value: postgres
+            - name: PGDATA
+              value: /data
+          volumeMounts:
+            - name: pg-data-storage
+              mountPath: /data
+              subPath: postgres
+
+            - name: config
+              mountPath: /docker-entrypoint-initdb.d/init.sql
+              subPath: init.sql
+
+  volumeClaimTemplates:
+    - metadata:
+        name: pg-data-storage
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 100Mi

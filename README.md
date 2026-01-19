@@ -48,3 +48,4 @@ I found the propagation of changes to be imperfect/slow on my setup, hence I dec
 ### Chapter 4
 
 - [3.1](https://github.com/tomjtoth/DevOps-with-Kubernetes/tree/3.1/pingpong)
+- [3.2](https://github.com/tomjtoth/DevOps-with-Kubernetes/tree/3.2/log_output)
