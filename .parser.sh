@@ -81,7 +81,7 @@ __parse(){
                 if [ ! -f "$path" ] && [ ! -d "$path" ]; then
                     WRONG_FLAGS+=("  $1 \"$2\" <- file does not exist")
                 else
-                    APPLY_THESE+=("$2")
+                    APPLY_THESE+=("$path")
                 fi
                 shift
                 ;;
@@ -92,7 +92,7 @@ __parse(){
                 if [ ! -f "$path" ] && [ ! -d "$path" ]; then
                     WRONG_FLAGS+=("  $1 \"$2\" <- file does not exist")
                 else
-                    DELETE_THESE+=("$2")
+                    DELETE_THESE+=("$path")
                 fi
                 shift
                 ;;
