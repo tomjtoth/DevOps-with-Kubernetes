@@ -11,6 +11,7 @@ __parse(){
 
         "-a | --apply   path/to/manifest"     "apply specific manifest"
         "-d | --delete  path/to/manifest"     "delete specific manifest"
+        --apply-all                           "apply all manifests"
         --delete-all                          "delete all manifests"
     )
     shift
@@ -28,29 +29,29 @@ __parse(){
         )
     fi
 
-    local usage="proper usage is: $script.sh [OPTIONS]
+    __usage(){
+        printf '%s' "proper usage is: $script.sh OPTIONS
 
-    Where OPTIONS are:
-    $(printf '  %-40s%s\n' "${opts[@]}")
+        Where OPTIONS are:
+        $(printf '  %-40s%s\n' "${opts[@]}")
+        " | sed 's/^    //gm'
+    }
 
-    will apply all manifests, if no OPTIONS provided
-
-    "
-
-    APPLY_ALL=1
+    if [ $# -eq 0 ]; then
+        echo "provide at least one flag"
+        exit 1
+    fi
 
     while [ $# -gt 0 ]; do
         case "$1" in 
             (--teardown) 
                 DELETE=1
-                unset APPLY_ALL
                 ;;
 
             (--create) CREATE=1;;
 
             (--resize)
                 if [ ! -v K3S ]; then
-                    unset APPLY_ALL
                     if [[ ! "$2" =~ ^[0-9]+$ ]]; then
                         WRONG_FLAGS+=("  $1 NNN <- needs to be a numeric arg, found \"$2\"")
                     else
@@ -69,14 +70,12 @@ __parse(){
                     DELETE_ALL=1
                 fi
                 ;;
-            
-            (--delete-all)
-                unset APPLY_ALL
-                DELETE_ALL=1
-                ;;
+
+            (--apply-all) APPLY_ALL=1;;
+
+            (--delete-all) DELETE_ALL=1;;
 
             (-a|--apply)
-                unset APPLY_ALL
                 path="$OLDPWD/$2"
                 if [ ! -f "$path" ] && [ ! -d "$path" ]; then
                     WRONG_FLAGS+=("  $1 \"$2\" <- file does not exist")
@@ -87,7 +86,6 @@ __parse(){
                 ;;
 
             (-d|--delete)
-                unset APPLY_ALL
                 path="$OLDPWD/$2"
                 if [ ! -f "$path" ] && [ ! -d "$path" ]; then
                     WRONG_FLAGS+=("  $1 \"$2\" <- file does not exist")
@@ -96,6 +94,8 @@ __parse(){
                 fi
                 shift
                 ;;
+
+            (-h|--help) WRONG_FLAGS+=("") ;;
 
             (*) WRONG_FLAGS+=("  $1")
         esac
@@ -107,7 +107,7 @@ __parse(){
             "the following flags are wrong/unknown:" \
             "${WRONG_FLAGS[@]}" \
             "" \
-            "$(echo "$usage" | sed 's/^    //gm')"
+            "$(__usage)"
         exit 1
     fi
 }
