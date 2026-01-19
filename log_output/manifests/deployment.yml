@@ -30,6 +30,7 @@ spec:
           volumeMounts:
             - name: shared-data
               mountPath: /app/data
+
         - name: log-server
           image: tomjtoth/devops-with-kubernetes:log-server-3.2
           env:
@@ -37,7 +38,6 @@ spec:
               value: 0.0.0.0
             - name: PORT
               value: "3000"
-
             - name: MESSAGE
               valueFrom:
                 configMapKeyRef:
@@ -47,6 +47,7 @@ spec:
               value: http://pingpong-svc:55555/pings
             - name: LOG_PATH
               value: data/log
+
           volumeMounts:
             - name: shared-data
               mountPath: /app/data
