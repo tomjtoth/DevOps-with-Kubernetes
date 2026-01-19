@@ -3,6 +3,7 @@ kind: Kustomization
 
 resources:
   - manifests/deployment.yml
+  - manifests/ingress.yml
   - manifests/service.yml
   - manifests/backend/deployment.yml
   - manifests/backend/service.yml
