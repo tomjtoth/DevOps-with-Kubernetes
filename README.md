@@ -58,3 +58,4 @@ I found the propagation of changes to be imperfect/slow on my setup, hence I dec
 - [3.9](https://github.com/tomjtoth/DevOps-with-Kubernetes/tree/3.9/todo_app)
 - 3.10 **SKIPPED**
 - [3.11](https://github.com/tomjtoth/DevOps-with-Kubernetes/tree/3.11/todo_app)
+- 3.12 **PENDING**: should be easy, but logs are not visible in the browser
