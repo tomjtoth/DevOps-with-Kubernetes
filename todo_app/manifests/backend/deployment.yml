@@ -24,3 +24,12 @@ spec:
               value: "3000"
             - name: DATABASE_URL
               value: postgres://postgres:password@postgres-svc
+
+          resources:
+            limits:
+              cpu: 500m
+              memory: 20Mi
+
+            requests:
+              cpu: 100m
+              memory: 5Mi

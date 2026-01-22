@@ -35,3 +35,12 @@ spec:
           volumeMounts:
             - name: shared-data
               mountPath: /app/public/data
+
+          resources:
+            limits:
+              cpu: 500m
+              memory: 20Mi
+
+            requests:
+              cpu: 100m
+              memory: 5Mi
