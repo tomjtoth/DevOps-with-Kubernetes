@@ -6,7 +6,7 @@ use std::{
 };
 
 use axum::{Router, extract::State, routing::get};
-use reqwest::Error;
+use reqwest::{Error, StatusCode};
 
 static BACKEND_URL: LazyLock<String> =
     LazyLock::new(|| env::var("BACKEND_URL").expect("missing env var BACKEND_URL"));
@@ -75,6 +75,16 @@ async fn main() {
 
     let app = Router::new()
         .route("/", get(root_handler))
+        .route(
+            "/healthz",
+            get(|| async {
+                if fetch_pings().await.is_ok() {
+                    StatusCode::OK
+                } else {
+                    StatusCode::FAILED_DEPENDENCY
+                }
+            }),
+        )
         .with_state(app_state);
 
     let ip = env::var("IP").expect("missing env var IP");

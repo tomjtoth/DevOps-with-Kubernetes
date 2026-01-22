@@ -32,7 +32,7 @@ spec:
               mountPath: /app/data
 
         - name: log-server
-          image: tomjtoth/devops-with-kubernetes:log-server-3.2
+          image: tomjtoth/devops-with-kubernetes:log-server-4.1
           env:
             - name: IP
               value: 0.0.0.0
@@ -55,3 +55,10 @@ spec:
             - name: config
               mountPath: /app/information.txt
               subPath: information.txt
+
+          readinessProbe:
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            httpGet:
+              path: /healthz
+              port: 3000
