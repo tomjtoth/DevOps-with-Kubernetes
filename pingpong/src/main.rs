@@ -25,9 +25,9 @@ async fn main() {
 
     let app = Router::new()
         .route("/pingpong", get(handle_browser))
-        .route("/healthz", get(|| async { StatusCode::OK }))
+        .route("/healthz", get(healthcheck))
         // for the ingress or whichever manifest that required `GET / -> 200 OK`
-        .route("/", get(|| async { StatusCode::OK }))
+        .route("/", get(healthcheck))
         .route("/pings", get(handle_ping))
         .with_state(state);
 
@@ -39,6 +39,18 @@ async fn main() {
 
     println!("listening at http://{}/pingpong", &addr);
     axum::serve(listener, app).await.unwrap();
+}
+
+async fn healthcheck(State(state): State<Arc<AppState>>) -> impl IntoResponse {
+    let res: Result<(i64,), sqlx::Error> = sqlx::query_as("SELECT count(*) FROM pings;")
+        .fetch_one(&state.pool)
+        .await;
+
+    if res.is_ok() {
+        StatusCode::OK
+    } else {
+        StatusCode::FAILED_DEPENDENCY
+    }
 }
 
 async fn handle_ping(State(state): State<Arc<AppState>>) -> impl IntoResponse {
