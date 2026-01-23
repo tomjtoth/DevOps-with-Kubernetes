@@ -63,3 +63,4 @@ I found the propagation of changes to be imperfect/slow on my setup, hence I dec
 ### Chapter 5
 
 - [4.1](https://github.com/tomjtoth/DevOps-with-Kubernetes/tree/4.1/pingpong)
+- [4.2](https://github.com/tomjtoth/DevOps-with-Kubernetes/tree/4.2/todo_app)
