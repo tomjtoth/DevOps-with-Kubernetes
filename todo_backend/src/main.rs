@@ -27,6 +27,7 @@ async fn main() {
     let state = Arc::new(AppState(pool));
 
     let app = Router::new()
+        .route("/healthz", get(healthz))
         .route("/todos", get(retrieve_todos))
         .route("/todos", post(add_todo))
         .with_state(state);
@@ -77,4 +78,14 @@ async fn add_todo(
         .expect("adding todo failed");
 
     StatusCode::CREATED
+}
+
+async fn healthz(State(state): State<Arc<AppState>>) -> impl IntoResponse {
+    let res = query("SELECT 1").execute(&state.0).await;
+
+    if res.is_ok() {
+        StatusCode::OK
+    } else {
+        StatusCode::FAILED_DEPENDENCY
+    }
 }
