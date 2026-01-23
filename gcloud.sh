@@ -28,7 +28,7 @@ if [ -v CREATE ]; then
         --disk-size=32 \
         --num-nodes=3 \
         --gateway-api=standard \
-        --machine-type=e2-micro
+        --machine-type=e2-small
 fi
 
 
