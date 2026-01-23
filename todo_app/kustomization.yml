@@ -4,14 +4,18 @@ kind: Kustomization
 resources:
   - manifests/namespace.yml
   - manifests/pvc.gke.yml
+
+  - manifests/postgres/service.yml
+  - manifests/postgres/statefulSet.yml
+
+  - manifests/backend/deployment.yml
+  - manifests/backend/service.yml
+
+  - manifests/reminder/cronJob.yml
+
   - manifests/deployment.yml
   - manifests/ingress.yml
   - manifests/service.yml
-  - manifests/backend/deployment.yml
-  - manifests/backend/service.yml
-  - manifests/reminder/cronJob.yml
-  - manifests/postgres/service.yml
-  - manifests/postgres/statefulSet.yml
 
 images:
   - name: IMAGES/APP
