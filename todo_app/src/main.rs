@@ -5,7 +5,7 @@ mod conf;
 #[cfg(feature = "server")]
 mod server;
 #[cfg(feature = "server")]
-use dioxus::fullstack::reqwest;
+use dioxus::{fullstack::reqwest, server::axum::routing::get};
 
 fn main() {
     #[cfg(not(feature = "server"))]
@@ -21,12 +21,9 @@ fn main() {
             conf::PORT.to_string()
         );
 
-        Ok(dioxus::server::router(App).route(
-            "/10min-image",
-            dioxus::server::axum::routing::get(|| async {
-                tokio::fs::read(&*conf::IMAGE_PATH).await.unwrap_or(vec![])
-            }),
-        ))
+        Ok(dioxus::server::router(App)
+            .route("/10min-image", get(server::serve_image))
+            .route("/healthz", get(server::healthz)))
     });
 }
 

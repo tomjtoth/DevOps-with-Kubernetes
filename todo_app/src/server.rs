@@ -1,9 +1,12 @@
 use std::{fs, io::Write, path::Path, time::SystemTime};
 
-use dioxus::fullstack::reqwest;
+use dioxus::{
+    fullstack::{reqwest, response::IntoResponse},
+    prelude::StatusCode,
+};
 
 use crate::{
-    conf::{CHANGE_INTERVAL, IMAGE_PATH},
+    conf::{BACKEND_URL, CHANGE_INTERVAL, IMAGE_PATH},
     log2,
 };
 
@@ -55,4 +58,18 @@ async fn get_image() -> Result<(), Box<dyn std::error::Error>> {
     println!("replaced image");
 
     Ok(())
+}
+
+pub(super) async fn serve_image() -> impl IntoResponse {
+    tokio::fs::read(&*IMAGE_PATH).await.unwrap_or(vec![])
+}
+
+pub(super) async fn healthz() -> impl IntoResponse {
+    let res = reqwest::get(&*BACKEND_URL).await;
+
+    if res.is_ok() {
+        StatusCode::OK
+    } else {
+        StatusCode::FAILED_DEPENDENCY
+    }
 }

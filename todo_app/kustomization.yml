@@ -15,7 +15,7 @@ resources:
 
 images:
   - name: IMAGES/APP
-    newName: tomjtoth/devops-with-kubernetes:todo-app-2.6
+    newName: tomjtoth/devops-with-kubernetes:todo-app-4.2
   - name: IMAGES/BACKEND
     newName: tomjtoth/devops-with-kubernetes:todo-backend-2.10
   - name: IMAGES/REMINDER
