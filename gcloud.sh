@@ -30,14 +30,7 @@ if [ -v CREATE ]; then
         --gateway-api=standard \
         --machine-type=e2-small
 
-    kubectl create namespace prometheus
-    helm install prometheus-community/kube-prometheus-stack \
-        --generate-name \
-        --namespace prometheus
-
-    kubectl create namespace argo-rollouts
-    kubectl apply -n argo-rollouts \
-        -f https://github.com/argoproj/argo-rollouts/releases/latest/download/install.yaml
+    install_bloatware
 fi
 
 

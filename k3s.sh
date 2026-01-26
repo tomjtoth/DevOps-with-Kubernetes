@@ -9,6 +9,8 @@ fi
 
 if [ -v CREATE ]; then
     k3d cluster create --port 8082:30080@agent:0 -p 8081:80@loadbalancer --agents 2
+
+    install_bloatware k3d-k3s-default
 fi
 
 k3s(){

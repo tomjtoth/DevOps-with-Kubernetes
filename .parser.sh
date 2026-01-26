@@ -115,3 +115,4 @@ __parse(){
 __parse $(basename ${BASH_SOURCE[1]}) "$@"
 
 source .timer.sh
+source .bloatware.sh
