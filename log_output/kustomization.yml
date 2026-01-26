@@ -18,3 +18,13 @@ resources:
   - manifests/service.yml
   - manifests/gateway.gke.yml
   - manifests/route.gke.yml
+
+images:
+  - name: IMAGES/SERVER
+    newName: tomjtoth/devops-with-kubernetes:log-server-4.1
+
+  - name: IMAGES/OUTPUT
+    newName: tomjtoth/devops-with-kubernetes:log-output-3.2
+
+  - name: IMAGES/PINGPONG
+    newName: tomjtoth/devops-with-kubernetes:pingpong-4.1
