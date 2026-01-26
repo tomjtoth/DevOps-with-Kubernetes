@@ -20,19 +20,24 @@ jobs:
         env:
           COMMIT_MSG: ${{ github.event.head_commit.message }}
         run: |
-          # https://regex101.com/r/H4BBVD/1
-          read -r APP VER <<<"$(
+          # https://regex101.com/r/H4BBVD
+          read -r APP VER PH <<<"$(
             printf '%s' "$COMMIT_MSG" \
-            | sed -nE 's/.*#deploy\s+([[:alnum:]-]+)\s*:\s*([0-9]+\.[0-9]+).*/\1 \2/p'
+            | sed -nE 's/.*#deploy\s+([[:alnum:]-]+)\s*(\(([^\)]+)\))?:\s*([0-9]+\.[0-9]+).*/\1 \4 \3/p'
           )"
           [ -z "$APP" ] && exit 1
-          echo "TAG=$APP-$VER" >> $GITHUB_ENV
+          echo "IMAGE=tomjtoth/devops-with-kubernetes:$APP-$VER" >> $GITHUB_ENV
+          echo "PLACEHOLDER=${PH:-${APP^^}}" >> $GITHUB_ENV
 
           FOLDER=$(
             printf '%s' "$APP" \
             | sed -E 's/[^[:alnum:]_]+/_/g'
           )
           echo "FOLDER=$FOLDER" >> $GITHUB_ENV
+
+          if [ -f $FOLDER/kustomization.yml ]; then
+            echo "KUSTOMIZE=1" >> $GITHUB_ENV
+          fi
 
       - name: Checkout
         uses: actions/checkout@v6
@@ -51,6 +56,22 @@ jobs:
         with:
           context: ./${{ env.FOLDER }}
           push: true
-          tags: tomjtoth/devops-with-kubernetes:${{ env.TAG }}
+          tags: ${{ env.IMAGE }}
           cache-from: type=gha,scope=shared
           cache-to: type=gha,mode=max,scope=shared
+
+      - name: Set up Kustomize
+        if: env.KUSTOMIZE == '1'
+        uses: imranismail/setup-kustomize@v2
+
+      - name: Use right image
+        if: env.KUSTOMIZE == '1'
+        working-directory: ./${{ env.FOLDER }}
+        run: kustomize edit set image IMAGES/${{ env.PLACEHOLDER }}=${{ env.IMAGE }}
+
+      - name: commit kustomization.yaml to GitHub
+        if: env.KUSTOMIZE == '1'
+        uses: EndBug/add-and-commit@v9
+        with:
+          add: "${{ env.FOLDER }}/kustomization.yml"
+          message: New version released ${{ env.IMAGE }}

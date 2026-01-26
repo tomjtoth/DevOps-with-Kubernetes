@@ -4,7 +4,7 @@ Tämä on palautusrepo HY:n kurssille.
 
 ## Tags
 
-Docker images ([`tomjtoth/devops-with-kubernetes:service-x.y`](https://hub.docker.com/r/tomjtoth/devops-with-kubernetes/tags)) are generated via [GHA](.github/workflows/deploy.yml#L19-L30), tags are parsed from the HEAD commit message ("... `#deploy service:x.y` ...") via regex.
+Docker images ([`tomjtoth/devops-with-kubernetes:service-x.y`](https://hub.docker.com/r/tomjtoth/devops-with-kubernetes/tags)) are generated via [GHA](.github/workflows/deploy.yml#L19-L30), tags are parsed from the HEAD commit message ("... `#deploy service(OPTIONAL_PLACEHOLDER):x.y` ...") via [regex](https://regex101.com/r/H4BBVD).
 
 ## K3s tweaks
 
@@ -73,3 +73,6 @@ I found the propagation of changes to be imperfect/slow on my setup, hence I dec
 - [4.4](https://github.com/tomjtoth/DevOps-with-Kubernetes/tree/4.4/pingpong)
 - [4.5](https://github.com/tomjtoth/DevOps-with-Kubernetes/tree/4.5/todo_app)
   no time for migrations atm, I teardown/re-create my clusters often enough, anyways 🤓
+- 4.6 **SKIPPED**
+- [4.7](https://github.com/tomjtoth/DevOps-with-Kubernetes/tree/4.7/log_output)
+  deploy only via my original script (see above)
