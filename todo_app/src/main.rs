@@ -1,4 +1,5 @@
 use dioxus::prelude::*;
+use serde::{Deserialize, Serialize};
 
 #[cfg(feature = "server")]
 mod conf;
@@ -6,6 +7,13 @@ mod conf;
 mod server;
 #[cfg(feature = "server")]
 use dioxus::{fullstack::reqwest, server::axum::routing::get};
+
+#[derive(Serialize, Deserialize, Clone)]
+struct Todo {
+    id: i64,
+    done: bool,
+    task: String,
+}
 
 fn main() {
     #[cfg(not(feature = "server"))]
@@ -40,11 +48,11 @@ fn log2<T: std::error::Error>(ops: impl std::fmt::Display) -> impl Fn(&T) {
 }
 
 #[get("/todos")]
-async fn get_todos() -> Result<Vec<String>> {
+async fn get_todos() -> Result<Vec<Todo>> {
     let arr = reqwest::get(&*conf::BACKEND_URL)
         .await
         .inspect_err(log2("request to backend failed"))?
-        .json::<Vec<String>>()
+        .json()
         .await
         .inspect_err(log2("parsing json failed"))?;
 
@@ -52,24 +60,38 @@ async fn get_todos() -> Result<Vec<String>> {
 }
 
 #[post("/todos")]
-async fn post_todo(todo: String) -> Result<String> {
-    reqwest::Client::new()
+async fn post_todo(todo: String) -> Result<Todo> {
+    let res = reqwest::Client::new()
         .post(&*conf::BACKEND_URL)
         .json(&todo)
         .send()
         .await
         .inspect_err(log2("posting todo to backend"))?;
 
+    let todo = res.json::<Todo>().await?;
     Ok(todo)
+}
+
+#[put("/todos/:id")]
+async fn mark_done(id: i64) -> Result<()> {
+    reqwest::Client::new()
+        .put(&*conf::BACKEND_URL)
+        .json(&id)
+        .send()
+        .await
+        .inspect_err(log2("marking todo done"))?;
+
+    Ok(())
 }
 
 #[component]
 pub fn App() -> Element {
-    let todos_query_res = use_server_future(get_todos)?;
+    let todos_query_res: Resource<std::result::Result<Vec<Todo>, dioxus::CapturedError>> =
+        use_server_future(get_todos)?;
     use_server_future(check_on_image)?;
 
     let mut value = use_signal(|| String::new());
-    let mut todos = use_signal(Vec::<String>::new);
+    let mut todos = use_signal(Vec::<Todo>::new);
 
     use_effect(move || {
         if let Some(Ok(list)) = todos_query_res() {
@@ -97,9 +119,35 @@ pub fn App() -> Element {
             }
             button { "Create todo" }
         }
+        h3 { "Todo" }
         ul {
             for todo in todos.iter() {
-                li { "{todo}" }
+                if !todo.done {
+                    button {
+                        onclick: {
+                            let id = todo.id.clone();
+                            move |_| async move {
+                                if mark_done(id).await.is_ok() {
+                                    for mut todo in todos.iter_mut() {
+                                        if todo.id == id {
+                                            todo.done = true;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "Mark as done"
+                    }
+                }
+            }
+        }
+        h3 { "Done" }
+        ul {
+            for todo in todos.read().iter() {
+                if todo.done {
+                    li { key: "{todo.id}", "{todo.task}" }
+                }
             }
         }
         h3 { "DevOps with Kubernetes 2025" }
