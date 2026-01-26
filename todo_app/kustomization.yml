@@ -1,27 +1,23 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-
-
-
-
 resources:
-- manifests/namespace.yml
-- manifests/pvc.gke.yml
-- manifests/postgres/service.yml
-- manifests/postgres/statefulSet.yml
-- manifests/backend/deployment.yml
-- manifests/backend/service.yml
-- manifests/reminder/cronJob.yml
-- manifests/deployment.yml
-- manifests/ingress.yml
-- manifests/service.yml
+  - manifests/namespace.yml
+  - manifests/pvc.gke.yml
+  - manifests/postgres/service.yml
+  - manifests/postgres/statefulSet.yml
+  - manifests/backend/deployment.yml
+  - manifests/backend/service.yml
+  - manifests/reminder/cronJob.yml
+  - manifests/deployment.yml
+  - manifests/ingress.yml
+  - manifests/service.yml
 
 images:
-- name: IMAGES/APP
-  newName: tomjtoth/devops-with-kubernetes
-  newTag: todo-app-4.8
-- name: IMAGES/BACKEND
-  newName: tomjtoth/devops-with-kubernetes:todo-backend-4.5
-- name: IMAGES/REMINDER
-  newName: tomjtoth/devops-with-kubernetes:todo-reminder-2.9
+  - name: IMAGES/APP
+    newName: tomjtoth/devops-with-kubernetes
+    newTag: todo-app-4.8
+  - name: IMAGES/BACKEND
+    newName: tomjtoth/devops-with-kubernetes:todo-backend-4.5
+  - name: IMAGES/REMINDER
+    newName: tomjtoth/devops-with-kubernetes:todo-reminder-2.9

@@ -1,31 +1,24 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-
-
-  # - manifests/pingpong/rollout.yml
-  # - manifests/pingpong/analysisTemplate.yml
-
 resources:
-- manifests/namespace.yml
-- manifests/pvc.yml
-- manifests/postgres/service.yml
-- manifests/postgres/statefulSet.yml
-- manifests/pingpong/deployment.yml
-- manifests/pingpong/service.yml
-- manifests/configMap.yml
-- manifests/deployment.yml
-- manifests/service.yml
-- manifests/gateway.gke.yml
-- manifests/route.gke.yml
-
-
+  - manifests/namespace.yml
+  - manifests/pvc.yml
+  - manifests/postgres/service.yml
+  - manifests/postgres/statefulSet.yml
+  - manifests/pingpong/deployment.yml
+  - manifests/pingpong/service.yml
+  - manifests/configMap.yml
+  - manifests/deployment.yml
+  - manifests/service.yml
+  - manifests/gateway.gke.yml
+  - manifests/route.gke.yml
 
 images:
-- name: IMAGES/OUTPUT
-  newName: tomjtoth/devops-with-kubernetes
-  newTag: log-output-4.7
-- name: IMAGES/PINGPONG
-  newName: tomjtoth/devops-with-kubernetes:pingpong-4.1
-- name: IMAGES/SERVER
-  newName: tomjtoth/devops-with-kubernetes:log-server-4.1
+  - name: IMAGES/OUTPUT
+    newName: tomjtoth/devops-with-kubernetes
+    newTag: log-output-4.7
+  - name: IMAGES/PINGPONG
+    newName: tomjtoth/devops-with-kubernetes:pingpong-4.1
+  - name: IMAGES/SERVER
+    newName: tomjtoth/devops-with-kubernetes:log-server-4.1
