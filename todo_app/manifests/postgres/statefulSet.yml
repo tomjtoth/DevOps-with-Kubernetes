@@ -7,7 +7,8 @@ data:
   init.sql: |
     CREATE TABLE IF NOT EXISTS todos (
       id SERIAL,
-      todo TEXT
+      todo TEXT,
+      done boolean
     );
 
     INSERT INTO todos (todo) VALUES 

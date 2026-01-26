@@ -1,8 +1,10 @@
 use std::sync::LazyLock;
 use std::{env, sync::Arc};
 
+use axum::extract::Path;
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
+use axum::routing::put;
 use axum::{
     Json, Router,
     extract::State,
@@ -30,6 +32,7 @@ async fn main() {
         .route("/healthz", get(healthz))
         .route("/todos", get(retrieve_todos))
         .route("/todos", post(add_todo))
+        .route("/todos/{id}", put(mark_done))
         .with_state(state);
 
     let ip = env::var("IP").expect("missing env var IP");
@@ -78,6 +81,16 @@ async fn add_todo(
         .expect("adding todo failed");
 
     StatusCode::CREATED
+}
+
+async fn mark_done(State(state): State<Arc<AppState>>, Path(id): Path<i64>) -> impl IntoResponse {
+    query("UPDATE todos SET done = true WHERE id = $1")
+        .bind(id)
+        .execute(&state.0)
+        .await
+        .expect("marking todo done failed");
+
+    StatusCode::OK
 }
 
 async fn healthz(State(state): State<Arc<AppState>>) -> impl IntoResponse {
