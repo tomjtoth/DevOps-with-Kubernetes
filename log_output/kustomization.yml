@@ -10,8 +10,8 @@ resources:
 
   - manifests/pingpong/deployment.yml
   - manifests/pingpong/service.yml
-  - manifests/pingpong/rollout.yml
-  - manifests/pingpong/analysisTemplate.yml
+  # - manifests/pingpong/rollout.yml
+  # - manifests/pingpong/analysisTemplate.yml
 
   - manifests/configMap.yml
   - manifests/deployment.yml
