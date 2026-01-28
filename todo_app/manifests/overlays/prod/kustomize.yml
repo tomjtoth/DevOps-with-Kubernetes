@@ -1,0 +1,14 @@
+resources:
+  - ../../base
+
+namePrefix: prod-
+
+images:
+  - name: IMAGES/APP
+    newName: tomjtoth/devops-with-kubernetes
+    newTag: todo-app-4.8
+
+  - name: IMAGES/BACKEND
+    newName: tomjtoth/devops-with-kubernetes:todo-backend-4.5
+  - name: IMAGES/REMINDER
+    newName: tomjtoth/devops-with-kubernetes:todo-reminder-2.9

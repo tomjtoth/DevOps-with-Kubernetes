@@ -21,13 +21,14 @@ jobs:
           COMMIT_MSG: ${{ github.event.head_commit.message }}
         run: |
           # https://regex101.com/r/H4BBVD
-          read -r APP VER PH <<<"$(
+          read -r PROD APP VER PH <<<"$(
             printf '%s' "$COMMIT_MSG" \
-            | sed -nE 's/.*#deploy\s+([[:alnum:]-]+)\s*(\(([^\)]+)\))?:\s*([0-9]+\.[0-9]+).*/\1 \4 \3/p'
+            | sed -nE 's/.*#deploy\s+(PROD\s+)?\([[:alnum:]-]+)\s*(\(([^\)]+)\))?:\s*([0-9]+\.[0-9]+).*/"\1" "\2" "\5" "\4"/p'
           )"
           [ -z "$APP" ] && exit 1
           echo "IMAGE=tomjtoth/devops-with-kubernetes:$APP-$VER" >> $GITHUB_ENV
           echo "PLACEHOLDER=${PH:-${APP^^}}" >> $GITHUB_ENV
+          echo "KUSTOMIZE_PROD_CHK=$PROD" >> $GITHUB_ENV
 
           FOLDER=$(
             printf '%s' "$APP" \
@@ -40,8 +41,14 @@ jobs:
 
       - name: decide if can run Kustomize
         run: |
-          if [ -f $FOLDER/kustomization.yml ]; then
+          if [ -f $FOLDER/manifests/base/kustomization.yml ]; then
             echo "KUSTOMIZE=1" >> $GITHUB_ENV
+          fi
+
+          if [ -v KUSTOMIZE_PROD_CHK ] && \
+             [ -f $FOLDER/manifests/overlays/prod/kustomization.yml ]
+          then
+            echo "KUSTOMIZE_PROD=1" >> $GITHUB_ENV
           fi
 
       - name: Set up Docker Buildx
@@ -66,14 +73,26 @@ jobs:
         if: env.KUSTOMIZE == '1'
         uses: imranismail/setup-kustomize@v2
 
-      - name: Use right image
+      - name: Update base image
         if: env.KUSTOMIZE == '1'
-        working-directory: ./${{ env.FOLDER }}
+        working-directory: ./${{ env.FOLDER }}/manifests/base
         run: kustomize edit set image IMAGES/${{ env.PLACEHOLDER }}=${{ env.IMAGE }}
 
-      - name: commit kustomization.yaml to GitHub
+      - name: commit base kustomization.yaml to GitHub
         if: env.KUSTOMIZE == '1'
         uses: EndBug/add-and-commit@v9
         with:
-          add: "${{ env.FOLDER }}/kustomization.yml"
+          add: "${{ env.FOLDER }}/manifests/base/kustomization.yml"
           message: New version released ${{ env.IMAGE }}
+
+      - name: Update prod image also
+        if: env.KUSTOMIZE_PROD == '1'
+        working-directory: ./${{ env.FOLDER }}/manifests/overlays/prod
+        run: kustomize edit set image IMAGES/${{ env.PLACEHOLDER }}=${{ env.IMAGE }}
+
+      - name: commit prod kustomization.yaml to GitHub also
+        if: env.KUSTOMIZE_PROD == '1'
+        uses: EndBug/add-and-commit@v9
+        with:
+          add: "${{ env.FOLDER }}/manifests/overlays/prod/kustomization.yml"
+          message: New version released ${{ env.IMAGE }} to prod

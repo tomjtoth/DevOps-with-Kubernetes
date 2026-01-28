@@ -4,7 +4,7 @@ Tämä on palautusrepo HY:n kurssille.
 
 ## Tags
 
-Docker images ([`tomjtoth/devops-with-kubernetes:service-x.y`](https://hub.docker.com/r/tomjtoth/devops-with-kubernetes/tags)) are generated via [GHA](.github/workflows/deploy.yml#L19-L30), tags are parsed from the HEAD commit message ("... `#deploy service(OPTIONAL_PLACEHOLDER):x.y` ...") via [regex](https://regex101.com/r/H4BBVD).
+Docker images ([`tomjtoth/devops-with-kubernetes:service-x.y`](https://hub.docker.com/r/tomjtoth/devops-with-kubernetes/tags)) are generated via [GHA](.github/workflows/deploy.yml#L19-L37), tags are parsed from the HEAD commit message ("... `#deploy <PROD> service(OPTIONAL_PLACEHOLDER):x.y` ...") via [regex](https://regex101.com/r/H4BBVD).
 
 ## K3s tweaks
 
@@ -78,3 +78,17 @@ I found the propagation of changes to be imperfect/slow on my setup, hence I dec
   deployment only via my original script (see above) was [successful](https://github.com/tomjtoth/DevOps-with-Kubernetes/actions/runs/21367094242)
 - [4.8](https://github.com/tomjtoth/DevOps-with-Kubernetes/tree/4.8/.github/workflows/deploy.yml)
   deployment only via my original script (see above) was [successful](https://github.com/tomjtoth/DevOps-with-Kubernetes/actions/runs/21367739961)
+
+- [4.9](https://github.com/tomjtoth/DevOps-with-Kubernetes/tree/4.8/.github/workflows/deploy.yml)
+  Tweaked my original deployment workflow to this step, which resulted in a more complex logic, so decided to keep it instead
+  - The below is triggered via HEAD commit messages, such as `#deploy todo-app(APP):4.9`
+
+    > Each commit to the main branch should result in deployment to the staging environment
+
+  - The below gets trigggered via HEAD commit messages, like: `#deploy PROD todo-app(APP):4.9`, details [here](.github/workflows/deploy.yml#L88-L98)
+
+    > Each tagged commit results in deployment to the production environment
+
+  - And the below tasks were skipped previously, so this task is actually much simpler 😎
+    > In staging the broadcaster just logs all the messages, it does not forward those to any external service
+    > In staging database is not backed up

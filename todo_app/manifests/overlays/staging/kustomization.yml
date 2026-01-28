@@ -1,0 +1,13 @@
+resources:
+  - ../../base
+
+patches:
+  - path: deployment.yaml
+
+namePrefix: staging-
+
+# skipped the NATS task previously:
+# In staging the broadcaster just logs all the messages, it does not forward those to any external service
+
+# also skipped the DB backup task previously:
+# In staging database is not backed up
