@@ -79,9 +79,9 @@ I found the propagation of changes to be imperfect/slow on my setup, hence I dec
 - [4.8](https://github.com/tomjtoth/DevOps-with-Kubernetes/tree/4.8/.github/workflows/deploy.yml)
   deployment only via my original script (see above) was [successful](https://github.com/tomjtoth/DevOps-with-Kubernetes/actions/runs/21367739961)
 
-- [4.9](https://github.com/tomjtoth/DevOps-with-Kubernetes/tree/4.8/.github/workflows/deploy.yml)
+- [4.9](https://github.com/tomjtoth/DevOps-with-Kubernetes/tree/4.9/.github/workflows/deploy.yml)
   Tweaked my original deployment workflow to this step, which resulted in a more complex logic, so decided to keep it instead
-  - The below is triggered via HEAD commit messages, such as `#deploy todo-app(APP):4.9`
+  - The below is triggered via HEAD commit messages, such as `#deploy todo-app(APP):4.9`, logs of successful run [here](https://github.com/tomjtoth/DevOps-with-Kubernetes/actions/runs/21444924003/job/61757877456)
 
     > Each commit to the main branch should result in deployment to the staging environment
 
