@@ -21,7 +21,7 @@ jobs:
           COMMIT_MSG: ${{ github.event.head_commit.message }}
         run: |
           # https://regex101.com/r/H4BBVD
-          regex='#deploy\s+(PROD\s+)?([[:alnum:]-]+)\s*(\(([^\)]+)\))?:\s*([0-9]+\.[0-9]+)]]'
+          regex='#deploy +(PROD +)?([[:alnum:]-]+) *(\(([[:alnum:]]+)\))?: *([0-9]+\.[0-9]+)'
 
           if [[ "$COMMIT_MSG" =~ $regex ]]; then
             PROD=${BASH_REMATCH[1]}
