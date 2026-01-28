@@ -6,10 +6,6 @@ Tämä on palautusrepo HY:n kurssille.
 
 Docker images ([`tomjtoth/devops-with-kubernetes:service-x.y`](https://hub.docker.com/r/tomjtoth/devops-with-kubernetes/tags)) are generated via [GHA](.github/workflows/deploy.yml#L19-L37), tags are parsed from the HEAD commit message ("... `#deploy <PROD> service(OPTIONAL_PLACEHOLDER):x.y` ...") via [regex](https://regex101.com/r/H4BBVD).
 
-## K3s tweaks
-
-I found the propagation of changes to be imperfect/slow on my setup, hence I decided to recreate the cluster for every single submission via [this script](./k3s.sh).
-
 ### Chapter 2
 
 - [1.1](https://github.com/tomjtoth/DevOps-with-Kubernetes/tree/1.1/log_output)
@@ -92,3 +88,7 @@ I found the propagation of changes to be imperfect/slow on my setup, hence I dec
   - And the below tasks were skipped previously, so this task is actually much simpler 😎
     > In staging the broadcaster just logs all the messages, it does not forward those to any external service
     > In staging database is not backed up
+
+- [4.10](https://github.com/tomjtoth/DevOps-with-Kubernetes/tree/4.10/todo_app)
+  Manifests and cluster helper scripts were moved [here](https://github.com/tomjtoth/dwk-conf).
+  This disables the automated release process established in the prev task 😭
