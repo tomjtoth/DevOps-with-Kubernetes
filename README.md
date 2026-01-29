@@ -97,6 +97,8 @@ Docker images ([`tomjtoth/devops-with-kubernetes:service-x.y`](https://hub.docke
 
 - 5.1 **SKIPPED**
 - [5.2](https://github.com/tomjtoth/DevOps-with-Kubernetes/tree/5.2/)
+  My custom script got updated [here](https://github.com/tomjtoth/dwk-conf/tree/5.2/k3s.sh#L18-L26).
+  The below commands were necessary to get to the cleanup part (but not including it):
 
   ```sh
   kubectl apply \
