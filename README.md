@@ -92,3 +92,107 @@ Docker images ([`tomjtoth/devops-with-kubernetes:service-x.y`](https://hub.docke
 - [4.10](https://github.com/tomjtoth/DevOps-with-Kubernetes/tree/4.10/todo_app)
   Manifests and cluster helper scripts were moved [here](https://github.com/tomjtoth/dwk-conf).
   This disables the automated release process established in the prev task 😭
+
+### Chapter 6
+
+- 5.1 **SKIPPED**
+- [5.2](https://github.com/tomjtoth/DevOps-with-Kubernetes/tree/5.2/)
+
+  ```sh
+  kubectl apply \
+    -f https://raw.githubusercontent.com/istio/istio/release-1.28/samples/bookinfo/platform/kube/bookinfo.yaml \
+    -f https://raw.githubusercontent.com/istio/istio/release-1.28/samples/bookinfo/platform/kube/bookinfo-versions.yaml \
+    -f https://raw.githubusercontent.com/istio/istio/release-1.28/samples/bookinfo/gateway-api/bookinfo-gateway.yaml
+
+  kubectl annotate gateway bookinfo-gateway networking.istio.io/service-type=ClusterIP --namespace=default
+
+  kubectl label namespace default istio.io/dataplane-mode=ambient
+
+  kubectl apply \
+    -f https://raw.githubusercontent.com/istio/istio/release-1.28/samples/addons/prometheus.yaml \
+    -f https://raw.githubusercontent.com/istio/istio/release-1.28/samples/addons/kiali.yaml
+
+  kubectl apply -f - <<EOF
+  apiVersion: security.istio.io/v1
+  kind: AuthorizationPolicy
+  metadata:
+    name: productpage-ztunnel
+    namespace: default
+  spec:
+    selector:
+      matchLabels:
+        app: productpage
+    action: ALLOW
+    rules:
+    - from:
+      - source:
+          principals:
+          - cluster.local/ns/default/sa/bookinfo-gateway-istio
+  EOF
+
+  # kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.28/samples/curl/curl.yaml
+
+  istioctl waypoint apply --enroll-namespace --wait
+
+  kubectl apply -f - <<EOF
+  apiVersion: security.istio.io/v1
+  kind: AuthorizationPolicy
+  metadata:
+    name: productpage-waypoint
+    namespace: default
+  spec:
+    targetRefs:
+    - kind: Service
+      group: ""
+      name: productpage
+    action: ALLOW
+    rules:
+    - from:
+      - source:
+          principals:
+          - cluster.local/ns/default/sa/curl
+      to:
+      - operation:
+          methods: ["GET"]
+  EOF
+
+  kubectl apply -f - <<EOF
+  apiVersion: security.istio.io/v1
+  kind: AuthorizationPolicy
+  metadata:
+    name: productpage-ztunnel
+    namespace: default
+  spec:
+    selector:
+      matchLabels:
+        app: productpage
+    action: ALLOW
+    rules:
+    - from:
+      - source:
+          principals:
+          - cluster.local/ns/default/sa/bookinfo-gateway-istio
+          - cluster.local/ns/default/sa/waypoint
+  EOF
+
+  kubectl apply -f - <<EOF
+  apiVersion: gateway.networking.k8s.io/v1
+  kind: HTTPRoute
+  metadata:
+    name: reviews
+  spec:
+    parentRefs:
+    - group: ""
+      kind: Service
+      name: reviews
+      port: 9080
+    rules:
+    - backendRefs:
+      - name: reviews-v1
+        port: 9080
+        weight: 90
+      - name: reviews-v2
+        port: 9080
+        weight: 10
+  EOF
+  ```
