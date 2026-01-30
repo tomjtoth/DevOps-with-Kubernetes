@@ -200,3 +200,6 @@ Docker images ([`tomjtoth/devops-with-kubernetes:service-x.y`](https://hub.docke
         weight: 10
   EOF
   ```
+
+- [5.3](https://github.com/tomjtoth/DevOps-with-Kubernetes/tree/5.3/greeter)
+  [Skipped installation of argocd & prometheus](https://github.com/tomjtoth/dwk-conf/tree/5.3/), as one of them interfered with the loadbalancer created by istio.
