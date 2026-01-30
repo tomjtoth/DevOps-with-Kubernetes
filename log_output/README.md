@@ -1,13 +1,7 @@
-# Log output
+# Exercises namespace
 
-You probably only need `rustc` or `rustup` for this. Then you can run it with
-
-```sh
-LOG_PATH=path/to/log.file cargo run
-```
-
-or deploy via
+Just reset your k3d cluster, install istio and [deploy](./kustomization.yml) via the below command
 
 ```sh
-kubectl apply -f manifests
+kubectl apply -k .
 ```

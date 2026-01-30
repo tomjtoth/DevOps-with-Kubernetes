@@ -55,7 +55,9 @@ spec:
                   name: log-output-conf
                   key: message
             - name: BACKEND_URL
-              value: http://pingpong-svc:55555/pings
+              value: http://pingpong-svc/pings
+            - name: GREETER_URL
+              value: http://greeter-svc
             - name: LOG_PATH
               value: data/log
 

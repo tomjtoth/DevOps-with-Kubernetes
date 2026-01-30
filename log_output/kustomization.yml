@@ -4,15 +4,19 @@ kind: Kustomization
 resources:
   - manifests/namespace.yml
   - manifests/pvc.yml
+
   - manifests/postgres/service.yml
   - manifests/postgres/statefulSet.yml
+
+  - manifests/greeter/deployments.yml
+  - manifests/greeter/services.yml
+
   - manifests/pingpong/deployment.yml
   - manifests/pingpong/service.yml
-  - manifests/configMap.yml
+
   - manifests/deployment.yml
   - manifests/service.yml
-  - manifests/gateway.gke.yml
-  - manifests/route.gke.yml
+  - manifests/routing.yml
 
 images:
   - name: IMAGES/OUTPUT
@@ -21,4 +25,4 @@ images:
   - name: IMAGES/PINGPONG
     newName: tomjtoth/devops-with-kubernetes:pingpong-4.1
   - name: IMAGES/SERVER
-    newName: tomjtoth/devops-with-kubernetes:log-server-4.1
+    newName: tomjtoth/devops-with-kubernetes:log-server-5.3

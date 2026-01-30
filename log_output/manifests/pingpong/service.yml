@@ -8,6 +8,6 @@ spec:
   selector:
     app: pingpong
   ports:
-    - port: 55555
+    - port: 80
       protocol: TCP
       targetPort: 3000
