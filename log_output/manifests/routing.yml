@@ -1,12 +1,27 @@
 apiVersion: gateway.networking.k8s.io/v1beta1
+kind: Gateway
+metadata:
+  namespace: exercises
+  name: my-gateway
+spec:
+  gatewayClassName: istio
+  listeners:
+    - name: http
+      protocol: HTTP
+      port: 80
+      allowedRoutes:
+        kinds:
+          - kind: HTTPRoute
+
+---
+apiVersion: gateway.networking.k8s.io/v1beta1
 kind: HTTPRoute
 metadata:
   namespace: exercises
   name: log-output-route
 spec:
   parentRefs:
-    - name: istio-ingressgateway
-      namespace: exercises
+    - name: my-gateway
   rules:
     - matches:
         - path:
@@ -16,8 +31,7 @@ spec:
             type: PathPrefix
             value: /pings
       backendRefs:
-        - name: pingpong
-          namespace: exercises
+        - name: pingpong.exercises
           port: 80
 
     - matches:
