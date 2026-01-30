@@ -220,3 +220,27 @@ Docker images ([`tomjtoth/devops-with-kubernetes:service-x.y`](https://hub.docke
 - [5.7](https://github.com/tomjtoth/DevOps-with-Kubernetes/tree/5.7/log_output/manifests)
   Starts working as soon as the istio-ingressgateway is deleted manually, I'm stuck trying to attach my HTTPRoute to the aforementioned GW.
   Submitting this for half a point and hoping the other half from 3.12 where my _cry for help_ was left unanswered 😭
+
+- 5.8
+  1. _HELM_ to install things to clusters
+  1. _istio_ for routing
+  1. argo for CD
+  1. (Registered on GitLab)
+  1. (been using GHA since 2023?)
+  1. (crate.io for deps of Rust projects)
+  1. (MS SQL Server@work)
+  1. (mongoDB@HY)
+  1. (MySQL@work)
+  1. (redis@HY)
+  1. (postgreSQL@HY)
+  1. (OracleDB@work)
+  1. didn't have the time for ~~kube-rs~~, but opened its page XD
+  1. **kubernetes**
+  1. I think _traefik_ was also used indirectly
+  1. _etcd_ implicitly in kubernetes
+  1. _CoreDNS_ similarly
+  1. (probably implicitly _Azure Disk Storage_ when experimented with AWS)
+  1. installed _containerd_ as pre-requisit for k3d
+  1. _prometheus_ to query
+  1. _kiali_ to track network traffic within the lcuster
+  1. _Grafana_ to visualize cluster metrics
