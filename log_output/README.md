@@ -11,3 +11,4 @@ Exposed endpoints reachable at the loadbalancer's external IP created by my-gate
 - `/pingpong`
 - `/pings`
 - `/`
+- `/wiki`

@@ -53,3 +53,17 @@ spec:
         - name: greeter-svc-v2
           weight: 25
           port: 80
+
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /wiki
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: /
+      backendRefs:
+        - name: wiki-svc
+          port: 80
