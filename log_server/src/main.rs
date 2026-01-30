@@ -11,11 +11,20 @@ use reqwest::{Error, StatusCode};
 static BACKEND_URL: LazyLock<String> =
     LazyLock::new(|| env::var("BACKEND_URL").expect("missing env var BACKEND_URL"));
 
+static GREETER_URL: LazyLock<String> =
+    LazyLock::new(|| env::var("GREETER_URL").expect("missing env var GREETER_URL"));
+
 #[derive(Clone)]
 struct AppState {
     log_file: Arc<File>,
     file_content: String,
     message: String,
+}
+
+async fn fetch_greeting() -> Result<String, Error> {
+    let resp = reqwest::get(&*GREETER_URL).await?.error_for_status()?;
+    let text = resp.text().await?;
+    Ok(text)
 }
 
 async fn fetch_pings() -> Result<String, Error> {
@@ -36,14 +45,17 @@ async fn root_handler(
     let _ = log_file.read_to_string(&mut log_contents);
 
     let pings = fetch_pings().await.unwrap_or("none, yet...".to_string());
+    let greeting = fetch_greeting()
+        .await
+        .unwrap_or("<SERVICE UNREACHABLE>".to_string());
 
     let log_lines = Vec::from_iter(log_contents.trim().split('\n'));
 
     let last_line = log_lines.last().unwrap_or(&"log is empty");
 
     format!(
-        "file content: {}\nenv variable: {}\n{}\nPing / Pongs: {}",
-        file_content, message, last_line, pings
+        "file content: {}\nenv variable: {}\n{}\nPing / Pongs: {}\nGreetings: {}\n",
+        file_content, message, last_line, pings, greeting
     )
 }
 
