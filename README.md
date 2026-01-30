@@ -214,3 +214,6 @@ Docker images ([`tomjtoth/devops-with-kubernetes:service-x.y`](https://hub.docke
   - **Rancher is fully open source**, whereas OpenShift is an enterprise solution with detailed subscription options
   - learning curve is steeper for OpenShift as it has more built-in functionalities
   - Rancher is more flexible due to less built-ins
+
+- [5.6](https://github.com/tomjtoth/DevOps-with-Kubernetes/tree/5.6/knative/manifests)
+  Installation steps for knative can be found [here](https://github.com/tomjtoth/dwk-conf/tree/5.6/k3s.sh#L27-L46).
