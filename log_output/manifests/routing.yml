@@ -43,9 +43,9 @@ spec:
           port: 80
 
     - matches:
-        - path:
-            type: Exact
-            value: /api/greeter
+        - headers:
+            - name: host
+              value: greeter-svc
       backendRefs:
         - name: greeter-svc-v1
           weight: 75
