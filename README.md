@@ -101,18 +101,20 @@ Docker images ([`tomjtoth/devops-with-kubernetes:service-x.y`](https://hub.docke
   The below commands were necessary to get to the cleanup part (but not including it):
 
   ```sh
+  samples=https://raw.githubusercontent.com/istio/istio/release-1.28/samples
+
   kubectl apply \
-    -f https://raw.githubusercontent.com/istio/istio/release-1.28/samples/bookinfo/platform/kube/bookinfo.yaml \
-    -f https://raw.githubusercontent.com/istio/istio/release-1.28/samples/bookinfo/platform/kube/bookinfo-versions.yaml \
-    -f https://raw.githubusercontent.com/istio/istio/release-1.28/samples/bookinfo/gateway-api/bookinfo-gateway.yaml
+    -f $samples/bookinfo/platform/kube/bookinfo.yaml \
+    -f $samples/bookinfo/platform/kube/bookinfo-versions.yaml \
+    -f $samples/bookinfo/gateway-api/bookinfo-gateway.yaml
 
   kubectl annotate gateway bookinfo-gateway networking.istio.io/service-type=ClusterIP --namespace=default
 
   kubectl label namespace default istio.io/dataplane-mode=ambient
 
   kubectl apply \
-    -f https://raw.githubusercontent.com/istio/istio/release-1.28/samples/addons/prometheus.yaml \
-    -f https://raw.githubusercontent.com/istio/istio/release-1.28/samples/addons/kiali.yaml
+    -f $samples/addons/prometheus.yaml \
+    -f $samples/addons/kiali.yaml
 
   kubectl apply -f - <<EOF
   apiVersion: security.istio.io/v1
@@ -132,7 +134,7 @@ Docker images ([`tomjtoth/devops-with-kubernetes:service-x.y`](https://hub.docke
           - cluster.local/ns/default/sa/bookinfo-gateway-istio
   EOF
 
-  # kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.28/samples/curl/curl.yaml
+  # kubectl apply -f $samples/curl/curl.yaml
 
   istioctl waypoint apply --enroll-namespace --wait
 
