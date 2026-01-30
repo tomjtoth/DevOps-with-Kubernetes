@@ -1,0 +1,24 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  namespace: exercises
+  name: pingpong
+spec:
+  template:
+    spec:
+      containers:
+        - name: pingpong
+          image: IMAGES/PINGPONG
+          env:
+            - name: IP
+              value: 0.0.0.0
+            - name: DATABASE_URL
+              value: postgres://postgres:password@postgres-svc
+
+          readinessProbe:
+            httpGet:
+              path: /healthz
+
+          livenessProbe:
+            httpGet:
+              path: /healthz

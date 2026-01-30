@@ -217,3 +217,6 @@ Docker images ([`tomjtoth/devops-with-kubernetes:service-x.y`](https://hub.docke
 
 - [5.6](https://github.com/tomjtoth/DevOps-with-Kubernetes/tree/5.6/knative/manifests)
   Installation steps for knative can be found [here](https://github.com/tomjtoth/dwk-conf/tree/5.6/k3s.sh#L27-L46).
+- [5.7](https://github.com/tomjtoth/DevOps-with-Kubernetes/tree/5.7/log_output/manifests)
+  Starts working as soon as the istio-ingressgateway is deleted manually, I'm stuck trying to attach my HTTPRoute to the aforementioned GW.
+  Submitting this for half a point and hoping the other half from 3.12 where my _cry for help_ was left unanswered 😭

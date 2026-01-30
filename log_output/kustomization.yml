@@ -11,8 +11,10 @@ resources:
   - manifests/greeter/deployments.yml
   - manifests/greeter/services.yml
 
-  - manifests/pingpong/deployment.yml
-  - manifests/pingpong/service.yml
+  - manifests/pingpong/knative.yml
+
+  - manifests/wikipedia/deployment.yml
+  - manifests/wikipedia/service.yml
 
   - manifests/deployment.yml
   - manifests/service.yml
