@@ -204,3 +204,13 @@ Docker images ([`tomjtoth/devops-with-kubernetes:service-x.y`](https://hub.docke
 - [5.3](https://github.com/tomjtoth/DevOps-with-Kubernetes/tree/5.3/greeter)
   [Skipped installation of argocd & prometheus](https://github.com/tomjtoth/dwk-conf/tree/5.3/), as one of them interfered with the loadbalancer created by istio.
 - [5.4](https://github.com/tomjtoth/DevOps-with-Kubernetes/tree/5.4/log_output/manifests/wikipedia)
+
+- [5.5](https://github.com/tomjtoth/DevOps-with-Kubernetes/tree/5.5)
+
+  #### Rancher vs OpenShift
+
+  Rancher for the win:
+  - Rancher supports many Linux distros, OpenShift requires Red Hat
+  - **Rancher is fully open source**, whereas OpenShift is an enterprise solution with detailed subscription options
+  - learning curve is steeper for OpenShift as it has more built-in functionalities
+  - Rancher is more flexible due to less built-ins
